@@ -1,6 +1,6 @@
 const fs = require('fs')
 const util = require('util')
-const uuid = require('uuid')
+const { v4 } = require('uuid')
 
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -19,7 +19,11 @@ class NoteWriter {
             return parsedNotes
         })
     }
-    // writeNotes()
+    writeNote(note) {
+        if (!note.title || !note.text) { throw new Error("Empty Note") }
+        note.id = v4()
+        return this.getNotes().then((notes) => { return notes.push(note) }).then((notes) => { return this.write(notes) }).then(() => { return note })
+    }
 }
 
 module.exports = new NoteWriter()
